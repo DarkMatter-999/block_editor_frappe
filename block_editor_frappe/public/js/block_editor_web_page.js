@@ -1,28 +1,26 @@
+let editor_node = null;
+
 frappe.ui.form.on('Web Page', {
-	refresh: function (frm) {
-		let editor_wrapper = frm.fields_dict.main_section_html.wrapper;
-
-		let editor = document.querySelectorAll("#block-editor-container");
-		if (0 === editor?.length) {
-			let editor = document.createElement("div");
-			editor.id = "block-editor-container";
-
-			editor_wrapper.append(editor);
-		}
-
+	onload: function (frm) {
 		let js_path = 'assets/block_editor_frappe/js/block_editor_main.bundle.js';
 
 		frappe.require(js_path, () => {
-			try {
-				if (window.mountDMBlockEditor && editor?.length) {
-					window.mountDMBlockEditor(editor[0]);
-				}
-			} catch (e) {
-				if (frappe.boot.developer_mode) {
-					console.error(e);
-				}
-			}
-		})
+            if (!editor_node && window.mountDMBlockEditor) {
+                editor_node = document.createElement("div");
+                editor_node.id = "block-editor-container";
+
+                window.mountDMBlockEditor(editor_node);
+            }
+        });
+	},
+	refresh: function (frm) {
+		if ('HTML' !== frm.doc.content_type || !editor_node) return;
+
+        const wrapper = frm.fields_dict.main_section_html.wrapper;
+
+        if (!wrapper.contains(editor_node)) {
+            wrapper.appendChild(editor_node);
+        }
 	},
 	content_type: function(frm) {
 		frm.trigger('refresh');
