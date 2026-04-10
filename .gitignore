@@ -48,6 +48,7 @@ jspm_packages/
 .wnf-lang-status
 *debug.log
 *.bundle.js
+*.bundle.css
 
 # Helix Editor
 .helix/
