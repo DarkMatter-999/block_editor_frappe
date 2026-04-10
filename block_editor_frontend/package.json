@@ -8,8 +8,8 @@
     "build": "tsc -b && vite build --mode production",
     "lint": "eslint .",
     "preview": "vite preview",
-    "format:check": "prettier --check .",
-    "format": "prettier --write ."
+    "format:check": "prettier --check .; prettier --check ../block_editor_frappe/public",
+    "format": "prettier --write .; prettier --write ../block_editor_frappe/public"
   },
   "dependencies": {
     "@wordpress/block-editor": "^15.16.0",

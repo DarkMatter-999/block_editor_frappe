@@ -1,5 +1,13 @@
-function BlockEditor() {
-  return <>Block Editor</>;
+export interface BlockEditorProps {
+  value?: string;
+  onChange?: (value: string) => void;
+  onClose?: () => void;
 }
 
-export default BlockEditor;
+export function BlockEditor({
+  value = "",
+  onChange,
+  onClose,
+}: BlockEditorProps) {
+  return <>BlockEditor</>;
+}
