@@ -3,19 +3,28 @@ import { parse, serialize, type BlockInstance } from "@wordpress/blocks";
 import {
   BlockEditorProvider,
   BlockList,
-  Inserter,
-  WritingFlow,
-  BlockTools,
-  __experimentalListView as ListView,
   BlockInspector,
+  BlockTools,
+  WritingFlow,
+  __experimentalListView as ListView,
+  __experimentalLibrary as BlockLibrary,
 } from "@wordpress/block-editor";
 import { SlotFillProvider, Popover } from "@wordpress/components";
 import "@wordpress/format-library";
 import { initEditor } from "./utils/initEditor";
 
+import {
+  IconChevronLeft,
+  IconListView,
+  IconPlus,
+  IconSettings,
+} from "./components/Icons";
+import { TopbarButton } from "./components/TopbarButton";
+import { SidebarHeading } from "./components/SidebarHeading";
+import { editorSettings } from "./utils/editorSettings";
+
 import "./BlockEditor.scss";
 
-// Import essential CSS
 import "@wordpress/components/build-style/style.css";
 import "@wordpress/block-editor/build-style/style.css";
 import "@wordpress/block-library/build-style/style.css";
@@ -29,6 +38,9 @@ export interface BlockEditorProps {
   onClose?: () => void;
 }
 
+// What the left sidebar is showing. null = closed.
+type LeftPanel = "inserter" | "overview" | null;
+
 export function BlockEditor({
   value = "",
   onChange,
@@ -39,12 +51,16 @@ export function BlockEditor({
     return parse(value) || [];
   });
 
+  const [leftPanel, setLeftPanel] = useState<LeftPanel>("overview");
+  const [showRight, setShowRight] = useState(true);
+
   const handleInput = (newBlocks: BlockInstance[]) => {
     setBlocks(newBlocks);
-    if (onChange) {
-      onChange(serialize(newBlocks));
-    }
+    onChange?.(serialize(newBlocks));
   };
+
+  const toggleLeft = (panel: LeftPanel) =>
+    setLeftPanel((prev) => (prev === panel ? null : panel));
 
   return (
     <div
@@ -54,133 +70,257 @@ export function BlockEditor({
         flexDirection: "column",
         width: "100vw",
         height: "100vh",
-        background: "#fff",
+        background: "var(--bg-color)",
+        fontFamily: "var(--font-stack)",
+        color: "var(--text-color)",
+        fontSize: "var(--text-md)",
+        overflow: "hidden",
       }}
     >
       <div
         style={{
-          height: "60px",
-          borderBottom: "1px solid #e0e0e0",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: "#fff",
+          height: "var(--navbar-height, 48px)",
+          minHeight: "var(--navbar-height, 48px)",
           flexShrink: 0,
+          borderBottom: "1px solid var(--border-color)",
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
+          alignItems: "center",
+          padding: "0 10px",
+          gap: "6px",
+          background: "var(--navbar-bg, var(--bg-color))",
         }}
       >
-        <button
-          onClick={onClose}
+        <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "8px",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: "14px",
-            color: "#1f2937",
-            padding: "8px 12px",
-            borderRadius: "4px",
+            gap: "6px",
+            justifySelf: "start",
+            minWidth: 0,
           }}
-          onMouseOver={(e) => (e.currentTarget.style.background = "#f3f4f6")}
-          onMouseOut={(e) => (e.currentTarget.style.background = "none")}
         >
-          Back to Desk
-        </button>
-        <div style={{ fontWeight: "600", color: "#1f2937" }}>Block Editor</div>
+          {/* Back to Desk */}
+          <button
+            onClick={onClose}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              background: "transparent",
+              border: "1px solid var(--border-color)",
+              cursor: "pointer",
+              fontSize: "var(--text-sm)",
+              fontFamily: "var(--font-stack)",
+              color: "var(--text-muted)",
+              padding: "0 10px",
+              borderRadius: "var(--border-radius)",
+              height: "28px",
+              whiteSpace: "nowrap",
+              transition: "background 0.1s, border-color 0.1s",
+              flexShrink: 0,
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "var(--control-bg)";
+              e.currentTarget.style.borderColor = "var(--dark-border-color)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.borderColor = "var(--border-color)";
+            }}
+          >
+            <IconChevronLeft />
+            Back to Desk
+          </button>
 
-        <div style={{ width: "120px" }}></div>
+          <div
+            style={{
+              width: "1px",
+              height: "18px",
+              background: "var(--border-color)",
+              margin: "0 2px",
+              flexShrink: 0,
+            }}
+          />
+
+          {/* Inserter toggle */}
+          <TopbarButton
+            active={leftPanel === "inserter"}
+            onClick={() => toggleLeft("inserter")}
+            title=""
+          >
+            <IconPlus />
+          </TopbarButton>
+
+          {/* Document overview toggle */}
+          <TopbarButton
+            active={leftPanel === "overview"}
+            onClick={() => toggleLeft("overview")}
+            title="Document overview"
+          >
+            <IconListView />
+          </TopbarButton>
+        </div>
+
+        {/* Centre title */}
+        <div style={{ justifySelf: "center", whiteSpace: "nowrap" }}>
+          <span
+            style={{
+              fontSize: "var(--text-md)",
+              fontWeight: 600,
+              color: "var(--heading-color, var(--text-color))",
+            }}
+          >
+            Block Editor
+          </span>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            justifySelf: "end",
+          }}
+        >
+          {/* Block settings toggle */}
+          <TopbarButton
+            active={showRight}
+            onClick={() => setShowRight((v) => !v)}
+            title="Block settings"
+          >
+            <IconSettings />
+          </TopbarButton>
+        </div>
       </div>
+
       <SlotFillProvider>
         <BlockEditorProvider
           value={blocks}
           onInput={handleInput}
           onChange={handleInput}
-          settings={
-            {
-              hasFixedToolbar: false,
-              layout: {
-                contentSize: "800px",
-                wideSize: "1200px",
-              },
-              colors: [
-                { name: "Blue", slug: "blue", color: "#0089ff" },
-                { name: "Dark", slug: "dark", color: "#333" },
-              ],
-            } as Record<string, unknown>
-          }
+          settings={editorSettings}
         >
-          <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-            {/* Left Sidebar: Document Overview / Block Tree */}
-            <div
-              className="block-editor-editor-sidebar-left"
-              style={{
-                width: "280px",
-                flexShrink: 0,
-                borderRight: "1px solid #d1d8dd",
-                background: "#f8f9fa",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              minHeight: 0,
+              overflow: "hidden",
+            }}
+          >
+            {/* Left sidebar */}
+            {leftPanel !== null && (
               <div
                 style={{
+                  width: "350px",
+                  minWidth: "350px",
+                  flexShrink: 0,
+                  borderRight: "1px solid var(--border-color)",
+                  background: "var(--fg-color)",
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "15px",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                  minHeight: 0,
                 }}
               >
-                <h3
+                {leftPanel === "overview" && (
+                  <SidebarHeading label={"Document overview"} />
+                )}
+
+                <div
                   style={{
-                    fontSize: "13px",
-                    textTransform: "uppercase",
-                    color: "#646970",
-                    margin: 0,
-                    padding: "0 16px",
+                    flex: 1,
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    minHeight: 0,
                   }}
                 >
-                  Document Overview
-                </h3>
-                <Inserter />
-              </div>
-              <div style={{ flex: 1, overflowY: "auto" }}>
-                <ListView />
-              </div>
-            </div>
+                  <div
+                    style={{
+                      display: leftPanel === "inserter" ? "block" : "none",
+                      height: "100%",
+                    }}
+                  >
+                    <BlockLibrary
+                      showMostUsedBlocks
+                      onClose={() => setLeftPanel(null)}
+                    />
+                  </div>
 
-            {/* Central Editing Canvas */}
+                  <div
+                    style={{
+                      display: leftPanel === "overview" ? "block" : "none",
+                      padding: "4px 0",
+                    }}
+                  >
+                    <ListView />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Canvas */}
             <BlockTools
-              className="block-editor-editor-content"
-              style={{ flex: 1, position: "relative", overflowY: "auto" }}
+              className="block-editor-content"
+              style={{
+                flex: 1,
+                minWidth: 0,
+                position: "relative",
+                overflowY: "auto",
+                overflowX: "hidden",
+                background: "var(--bg-light-gray, var(--control-bg))",
+              }}
             >
               <WritingFlow
                 className="editor-styles-wrapper"
                 style={{
                   padding: "40px",
-                  minHeight: "100%",
-                  maxWidth: "1000px",
-                  margin: "0 auto",
+                  maxWidth: "860px",
+                  margin: "24px auto",
+                  background: "var(--bg-color)",
+                  fontFamily: "var(--font-stack)",
+                  fontSize: "var(--text-md)",
+                  lineHeight: 1.7,
+                  color: "var(--text-color)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "var(--border-radius-lg, var(--border-radius))",
                 }}
               >
                 <BlockList />
               </WritingFlow>
             </BlockTools>
 
-            {/* Right Sidebar: Block Inspector */}
-            <div
-              style={{
-                width: "280px",
-                flexShrink: 0,
-                borderLeft: "1px solid #d1d8dd",
-                background: "#f8f9fa",
-                padding: "16px",
-                overflowY: "auto",
-              }}
-            >
-              <BlockInspector />
-            </div>
+            {/* Right sidebar */}
+            {showRight && (
+              <div
+                style={{
+                  width: "280px",
+                  minWidth: "280px",
+                  flexShrink: 0,
+                  borderLeft: "1px solid var(--border-color)",
+                  background: "var(--fg-color)",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                  minHeight: 0,
+                }}
+              >
+                <SidebarHeading label="Block" />
+                <div
+                  style={{
+                    flex: 1,
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    minHeight: 0,
+                  }}
+                >
+                  <BlockInspector />
+                </div>
+              </div>
+            )}
           </div>
+
           <Popover.Slot />
         </BlockEditorProvider>
       </SlotFillProvider>
