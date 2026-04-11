@@ -1,0 +1,12 @@
+.block-editor-wrapper {
+	&,
+	& * {
+		outline: none !important;
+
+		&:focus,
+		&:focus-within,
+		&:active {
+			outline: none !important;
+		}
+	}
+}
