@@ -342,6 +342,22 @@ export const editorSettings = {
       fluid: true,
     },
     blocks: {
+      "core/paragraph": {
+        typography: {
+          fontSize: true,
+          lineHeight: true,
+          textAlign: true,
+        },
+        color: { text: true, background: true, link: true },
+      },
+      "core/heading": {
+        typography: {
+          fontSize: true,
+          lineHeight: true,
+          textAlign: true,
+        },
+        color: { text: true, background: true },
+      },
       "core/button": {
         border: { radius: true },
         dimensions: {
