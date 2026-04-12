@@ -6,25 +6,47 @@ declare global {
   interface Window {
     mountDMBlockEditor: (
       element: HTMLElement,
-      initialContent: string,
+      content: string,
       onChange: (content: string) => void,
       onClose: () => void,
-    ) => Root;
+      docName: string,
+    ) => void;
   }
 }
 
-window.mountDMBlockEditor = (element, initialContent, onChange, onClose) => {
-  const root = createRoot(element);
+let root: Root | null = null;
 
-  root.render(
-    <StrictMode>
-      <BlockEditor
-        value={initialContent}
-        onChange={onChange}
-        onClose={onClose}
-      />
-    </StrictMode>,
-  );
+window.mountDMBlockEditor = (
+  element,
+  content,
+  onChange,
+  onClose,
+  docName = "",
+) => {
+  if (!root) {
+    root = createRoot(element);
+  }
 
-  return root;
+  const render = (newContent: string, newDocName: string) => {
+    root?.render(
+      <StrictMode>
+        <BlockEditor
+          key={newDocName}
+          value={newContent}
+          onChange={onChange}
+          onClose={onClose}
+        />
+      </StrictMode>,
+    );
+  };
+
+  render(content, docName);
+
+  return {
+    update: render,
+    unmount: () => {
+      root?.unmount();
+      root = null;
+    },
+  };
 };

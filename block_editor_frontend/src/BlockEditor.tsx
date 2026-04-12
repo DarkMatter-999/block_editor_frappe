@@ -4,6 +4,7 @@ import {
   BlockEditorProvider,
   BlockList,
   BlockInspector,
+  BlockStyles,
   BlockTools,
   WritingFlow,
   __experimentalListView as ListView,
@@ -27,6 +28,10 @@ import "./BlockEditor.scss";
 
 import "@wordpress/components/build-style/style.css";
 import "@wordpress/block-editor/build-style/style.css";
+import "@wordpress/block-editor/build-style/content.css";
+import "@wordpress/block-library/build-style/common.css";
+import "@wordpress/block-library/build-style/reset.css";
+import "@wordpress/block-library/build-style/elements.css";
 import "@wordpress/block-library/build-style/style.css";
 import "@wordpress/block-library/build-style/editor.css";
 import "@wordpress/block-library/build-style/theme.css";
@@ -88,6 +93,7 @@ export function BlockEditor({
           alignItems: "center",
           padding: "0 10px",
           gap: "6px",
+          borderStyle: "none",
           background: "var(--navbar-bg, var(--bg-color))",
         }}
       >
@@ -139,6 +145,7 @@ export function BlockEditor({
               height: "18px",
               background: "var(--border-color)",
               margin: "0 2px",
+              borderStyle: "none",
               flexShrink: 0,
             }}
           />
@@ -200,7 +207,9 @@ export function BlockEditor({
           onInput={handleInput}
           onChange={handleInput}
           settings={editorSettings}
+          stripExperimentalSettings={false}
         >
+          <BlockStyles scope=".editor-styles-wrapper" />
           <div
             style={{
               display: "flex",
@@ -221,6 +230,7 @@ export function BlockEditor({
                   display: "flex",
                   flexDirection: "column",
                   overflow: "hidden",
+                  borderStyle: "none",
                   minHeight: 0,
                 }}
               >
@@ -276,7 +286,7 @@ export function BlockEditor({
                 className="editor-styles-wrapper"
                 style={{
                   padding: "40px",
-                  maxWidth: "860px",
+                  width: "100%",
                   margin: "24px auto",
                   background: "var(--bg-color)",
                   fontFamily: "var(--font-stack)",
@@ -304,6 +314,7 @@ export function BlockEditor({
                   flexDirection: "column",
                   overflow: "hidden",
                   minHeight: 0,
+                  borderStyle: "none",
                 }}
               >
                 <SidebarHeading label="Block" />

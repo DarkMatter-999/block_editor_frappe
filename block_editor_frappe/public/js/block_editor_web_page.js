@@ -1,5 +1,5 @@
 let editor_node = null;
-let editor_instance = null;
+let editor_manager = null;
 
 frappe.ui.form.on("Web Page", {
 	onload: function (frm) {
@@ -8,18 +8,6 @@ frappe.ui.form.on("Web Page", {
 
 		frappe.require(js_path, () => {
 			if (!editor_node && window.mountDMBlockEditor) {
-				editor_node = document.createElement("div");
-				editor_node.id = "block-editor-container";
-				editor_node.style.cssText = `
-					display: none;
-					position: fixed;
-					inset: 0;
-					z-index: 9999;
-					background: white;
-				`;
-
-				document.body.appendChild(editor_node);
-
 				if (!document.querySelector(`link[href="${css_path}"]`)) {
 					const link = document.createElement("link");
 					link.rel = "stylesheet";
@@ -29,22 +17,23 @@ frappe.ui.form.on("Web Page", {
 					document.head.appendChild(link);
 				}
 
-				editor_instance = window.mountDMBlockEditor(
-					editor_node,
-					frm.doc.main_section_html || "",
-					(content) => {
-						frm.set_value("main_section_html", content);
-					},
-					() => {
-						editor_node.style.display = "none";
-					},
-				);
+				if (!editor_node) {
+					editor_node = document.createElement("div");
+					editor_node.id = "block-editor-container";
+					editor_node.style.cssText =
+						"display: none; position: fixed; inset: 0; z-index: 9999; background: white;";
+					document.body.appendChild(editor_node);
+				}
 
-				frm.trigger("refresh");
+				frm.trigger("setup_editor");
 			}
 		});
 	},
 	refresh: function (frm) {
+		if (window.mountDMBlockEditor) {
+			frm.trigger("setup_editor");
+		}
+
 		const wrapper = frm.fields_dict.main_section_html.wrapper;
 		const is_html = frm.doc.content_type === "HTML";
 
@@ -89,5 +78,22 @@ frappe.ui.form.on("Web Page", {
 	},
 	content_type: function (frm) {
 		frm.trigger("refresh");
+	},
+	setup_editor: function (frm) {
+		if (!editor_manager) {
+			editor_manager = window.mountDMBlockEditor(
+				editor_node,
+				frm.doc.main_section_html || "",
+				(content) => {
+					frm.set_value("main_section_html", content);
+				},
+				() => {
+					editor_node.style.display = "none";
+				},
+				frm.doc.name,
+			);
+		} else {
+			editor_manager.update(frm.doc.main_section_html || "", frm.doc.name);
+		}
 	},
 });
