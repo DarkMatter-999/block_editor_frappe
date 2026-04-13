@@ -37,7 +37,7 @@ frappe.ui.form.on("Web Page", {
 		const wrapper = frm.fields_dict.block_editor_interface.wrapper;
 		const is_block_editor = frm.doc.content_type === "Block Editor";
 
-		frm.toggle_display(["main_section_html"], !is_block_editor);
+		frm.toggle_display(["block_editor_html_internal"], !is_block_editor);
 
 		let launch_container = document.getElementById("block-editor-launch-box");
 
@@ -83,9 +83,9 @@ frappe.ui.form.on("Web Page", {
 		if (!editor_manager) {
 			editor_manager = window.mountDMBlockEditor(
 				editor_node,
-				frm.doc.block_editor_html || "",
+				frm.doc.block_editor_html_internal || "",
 				(raw_content, rendered_content) => {
-					frm.set_value("block_editor_html", raw_content);
+					frm.set_value("block_editor_html_internal", raw_content);
 					frm.set_value("block_editor_html_rendered", rendered_content);
 				},
 				() => {
@@ -94,7 +94,7 @@ frappe.ui.form.on("Web Page", {
 				frm.doc.name,
 			);
 		} else {
-			editor_manager.update(frm.doc.block_editor_html || "", frm.doc.name);
+			editor_manager.update(frm.doc.block_editor_html_internal || "", frm.doc.name);
 		}
 	},
 });

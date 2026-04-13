@@ -39,7 +39,7 @@ import "@wordpress/format-library/build-style/style.css";
 
 export interface BlockEditorProps {
   value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (content: string, rendered: string) => void;
   onClose?: () => void;
 }
 
@@ -61,7 +61,7 @@ export function BlockEditor({
 
   const handleInput = (newBlocks: BlockInstance[]) => {
     setBlocks(newBlocks);
-    onChange?.(serialize(newBlocks));
+    onChange?.(serialize(newBlocks), serialize(newBlocks));
   };
 
   const toggleLeft = (panel: LeftPanel) =>

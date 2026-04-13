@@ -7,7 +7,7 @@ declare global {
     mountDMBlockEditor: (
       element: HTMLElement,
       content: string,
-      onChange: (content: string) => void,
+      onChange: (content: string, rendered: string) => void,
       onClose: () => void,
       docName: string,
     ) => void;

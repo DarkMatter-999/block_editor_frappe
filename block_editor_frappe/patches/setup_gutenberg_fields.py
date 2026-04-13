@@ -19,7 +19,14 @@ def execute():
 					"fieldtype": "Code",
 					"label": "Rendered HTML",
 					"options": "HTML",
-					"read_only": 1,
+					"hidden": 1,
+					"insert_after": "block_editor_html_internal",
+				},
+				{
+					"fieldname": "block_editor_interface",
+					"fieldtype": "HTML",
+					"label": "Editor Interface",
+					"options": "HTML",
 					"insert_after": "block_editor_html_internal",
 				},
 				{
@@ -27,15 +34,9 @@ def execute():
 					"fieldtype": "Code",
 					"label": "Block Editor CSS",
 					"options": "CSS",
-					"insert_after": "block_editor_html_rendered",
+					"insert_after": "block_editor_interface",
 				},
-				{
-					"fieldname": "block_editor_interface",
-					"fieldtype": "HTML",
-					"label": "Editor Interface",
-					"options": "HTML",
-					"insert_after": "block_editor_css",
-				},
+
 			]
 		}
 	)
