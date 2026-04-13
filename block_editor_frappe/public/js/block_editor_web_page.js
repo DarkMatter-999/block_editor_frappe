@@ -21,7 +21,7 @@ frappe.ui.form.on("Web Page", {
 					editor_node = document.createElement("div");
 					editor_node.id = "block-editor-container";
 					editor_node.style.cssText =
-						"display: none; position: fixed; inset: 0; z-index: 9999; background: white;";
+						"display: none; position: fixed; inset: 0; z-index: 1500; background: white;";
 					document.body.appendChild(editor_node);
 				}
 
@@ -34,34 +34,34 @@ frappe.ui.form.on("Web Page", {
 			frm.trigger("setup_editor");
 		}
 
-		const wrapper = frm.fields_dict.main_section_html.wrapper;
-		const is_html = frm.doc.content_type === "HTML";
+		const wrapper = frm.fields_dict.block_editor_interface.wrapper;
+		const is_block_editor = frm.doc.content_type === "Block Editor";
 
-		wrapper.style.display = is_html ? "none" : "block";
+		frm.toggle_display(["main_section_html"], !is_block_editor);
 
 		let launch_container = document.getElementById("block-editor-launch-box");
 
-		if (is_html) {
+		if (is_block_editor) {
 			if (!launch_container) {
 				launch_container = document.createElement("div");
 				launch_container.id = "block-editor-launch-box";
 				launch_container.style.cssText = `
-				padding: 40px;
-				text-align: center;
-				border: 1px dashed var(--border-color);
-				background: var(--bg-light-gray);
-				border-radius: var(--border-radius-lg);
-				margin: var(--margin-md) 0;
-				`;
+					padding: 40px;
+					text-align: center;
+					border: 1px dashed var(--border-color);
+					background: var(--bg-light-gray);
+					border-radius: var(--border-radius-lg);
+					margin: var(--margin-md) 0;
+					`;
 
 				launch_container.innerHTML = `
-				<div class="text-muted" style="margin-bottom: var(--margin-sm); font-size: var(--text-md);">
-						This content is managed by the Block Editor
-				</div>
-				<button id="btn-open-block-editor" class="btn btn-primary btn-sm">
-						Edit Page Content
-				</button>
-				`;
+					<div class="text-muted" style="margin-bottom: var(--margin-sm); font-size: var(--text-md);">
+									This content is managed by the Block Editor
+					</div>
+					<button id="btn-open-block-editor" class="btn btn-primary btn-sm">
+									Edit Page Content
+					</button>
+					`;
 
 				wrapper.insertAdjacentElement("afterend", launch_container);
 
@@ -83,9 +83,10 @@ frappe.ui.form.on("Web Page", {
 		if (!editor_manager) {
 			editor_manager = window.mountDMBlockEditor(
 				editor_node,
-				frm.doc.main_section_html || "",
-				(content) => {
-					frm.set_value("main_section_html", content);
+				frm.doc.block_editor_html || "",
+				(raw_content, rendered_content) => {
+					frm.set_value("block_editor_html", raw_content);
+					frm.set_value("block_editor_html_rendered", rendered_content);
 				},
 				() => {
 					editor_node.style.display = "none";
@@ -93,7 +94,7 @@ frappe.ui.form.on("Web Page", {
 				frm.doc.name,
 			);
 		} else {
-			editor_manager.update(frm.doc.main_section_html || "", frm.doc.name);
+			editor_manager.update(frm.doc.block_editor_html || "", frm.doc.name);
 		}
 	},
 });
