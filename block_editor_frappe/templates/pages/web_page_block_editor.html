@@ -1,0 +1,13 @@
+{% extends "templates/web.html" %}
+
+{% block style %}
+{{ super() }}
+<link rel="stylesheet"
+      href="/assets/block_editor_frappe/css/block_editor_main.bundle.css">
+{% endblock %}
+
+{% block page_content %}
+<div class="block-editor-rendered-content editor-styles-wrapper">
+  {{ block_editor_content }}
+</div>
+{% endblock %}

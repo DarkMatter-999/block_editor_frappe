@@ -43,7 +43,7 @@ app_license = "gpl-3.0"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Web Page" : "public/js/block_editor_web_page.js"}
+doctype_js = {"Web Page": "public/js/block_editor_web_page.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -187,6 +187,8 @@ doctype_js = {"Web Page" : "public/js/block_editor_web_page.js"}
 # override_doctype_dashboards = {
 # 	"Task": "block_editor_frappe.task.get_dashboard_data"
 # }
+
+override_doctype_class = {"Web Page": "block_editor_frappe.overrides.web_page.BlockEditorWebPage"}
 
 # exempt linked doctypes from being automatically cancelled
 #
