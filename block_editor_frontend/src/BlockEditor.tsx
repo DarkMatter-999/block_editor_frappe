@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { parse, serialize, type BlockInstance } from "@wordpress/blocks";
+import {
+  parse,
+  serialize,
+  getSaveContent,
+  type BlockInstance,
+} from "@wordpress/blocks";
 import {
   BlockEditorProvider,
   BlockList,
@@ -61,7 +66,16 @@ export function BlockEditor({
 
   const handleInput = (newBlocks: BlockInstance[]) => {
     setBlocks(newBlocks);
-    onChange?.(serialize(newBlocks), serialize(newBlocks));
+
+    const serializedContent = serialize(newBlocks);
+
+    const renderedHTML = newBlocks
+      .map((block) =>
+        getSaveContent(block.name, block.attributes, block.innerBlocks),
+      )
+      .join("");
+
+    onChange?.(serializedContent, renderedHTML);
   };
 
   const toggleLeft = (panel: LeftPanel) =>
