@@ -3,6 +3,26 @@ import react from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
+import { generateThemeCss } from "./src/utils/generateThemeCss";
+
+function virtualWpThemePlugin() {
+  const virtualModuleId = "virtual:wp-theme.css";
+  const resolvedVirtualModuleId = "\0" + virtualModuleId;
+
+  return {
+    name: "vite-plugin-wp-theme-generator",
+    resolveId(id) {
+      if (id === virtualModuleId) {
+        return resolvedVirtualModuleId;
+      }
+    },
+    load(id) {
+      if (id === resolvedVirtualModuleId) {
+        return generateThemeCss();
+      }
+    },
+  };
+}
 
 const wpAlias = (pkg: string, file: string) => ({
   find: `@wordpress/${pkg}/build-style/${file}.css`,
@@ -32,6 +52,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      virtualWpThemePlugin(),
       react(),
       babel({ plugins: [["babel-plugin-react-compiler", { target: "18" }]] }),
     ],

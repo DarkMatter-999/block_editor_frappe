@@ -1,4 +1,5 @@
 import "../styles.scss";
+import "virtual:wp-theme.css";
 
 import "@wordpress/block-library/build-style/common.css";
 import "@wordpress/block-library/build-style/reset.css";
