@@ -17,6 +17,7 @@ import {
 } from "@wordpress/block-editor";
 import { SlotFillProvider, Popover } from "@wordpress/components";
 import "@wordpress/format-library";
+
 import { initEditor } from "./utils/initEditor";
 
 import {
@@ -30,17 +31,12 @@ import { SidebarHeading } from "./components/SidebarHeading";
 import { editorSettings } from "./utils/editorSettings";
 
 import "./BlockEditor.scss";
+import "./styles.scss";
 
 import "@wordpress/components/build-style/style.css";
 import "@wordpress/block-editor/build-style/style.css";
 import "@wordpress/block-editor/build-style/content.css";
-import "@wordpress/block-library/build-style/common.css";
-import "@wordpress/block-library/build-style/reset.css";
-import "@wordpress/block-library/build-style/elements.css";
-import "@wordpress/block-library/build-style/style.css";
 import "@wordpress/block-library/build-style/editor.css";
-import "@wordpress/block-library/build-style/theme.css";
-import "@wordpress/format-library/build-style/style.css";
 
 export interface BlockEditorProps {
   value?: string;

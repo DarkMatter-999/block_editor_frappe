@@ -4,15 +4,25 @@ let editor_manager = null;
 frappe.ui.form.on("Web Page", {
 	onload: function (frm) {
 		let js_path = "/assets/block_editor_frappe/js/block_editor_main.bundle.js";
-		let css_path = "/assets/block_editor_frappe/css/block_editor_main.bundle.css";
+		let css_main_path = "/assets/block_editor_frappe/css/block_editor_main.bundle.css";
+		let css_frontend_path = "/assets/block_editor_frappe/css/block_editor_frontend.bundle.css";
 
 		frappe.require(js_path, () => {
 			if (!editor_node && window.mountDMBlockEditor) {
-				if (!document.querySelector(`link[href="${css_path}"]`)) {
+				if (!document.querySelector(`link[href="${css_main_path}"]`)) {
 					const link = document.createElement("link");
 					link.rel = "stylesheet";
 					link.type = "text/css";
-					link.href = css_path;
+					link.href = css_main_path;
+
+					document.head.appendChild(link);
+				}
+
+				if (!document.querySelector(`link[href="${css_frontend_path}"]`)) {
+					const link = document.createElement("link");
+					link.rel = "stylesheet";
+					link.type = "text/css";
+					link.href = css_frontend_path;
 
 					document.head.appendChild(link);
 				}
