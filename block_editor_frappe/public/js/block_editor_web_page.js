@@ -3,41 +3,46 @@ let editor_manager = null;
 
 frappe.ui.form.on("Web Page", {
 	onload: function (frm) {
-		let js_path = "/assets/block_editor_frappe/js/block_editor_main.bundle.js";
-		let css_main_path = "/assets/block_editor_frappe/css/block_editor_main.bundle.css";
-		let css_frontend_path = "/assets/block_editor_frappe/css/block_editor_frontend.bundle.css";
+		const base = "/assets/block_editor_frappe/vite";
+		const js_path = `${base}/js/block_editor_main.js`;
+		const css_main = `${base}/css/block_editor_main.css`;
+		const css_front = `${base}/css/block_editor_frontend.css`;
 
-		frappe.require(js_path, () => {
-			if (!editor_node && window.mountDMBlockEditor) {
-				if (!document.querySelector(`link[href="${css_main_path}"]`)) {
-					const link = document.createElement("link");
-					link.rel = "stylesheet";
-					link.type = "text/css";
-					link.href = css_main_path;
+		if (!window.mountDMBlockEditor) {
+			if (!document.querySelector(`link[href="${css_main}"]`)) {
+				const link = document.createElement("link");
+				link.rel = "stylesheet";
+				link.type = "text/css";
+				link.href = css_main;
 
-					document.head.appendChild(link);
-				}
-
-				if (!document.querySelector(`link[href="${css_frontend_path}"]`)) {
-					const link = document.createElement("link");
-					link.rel = "stylesheet";
-					link.type = "text/css";
-					link.href = css_frontend_path;
-
-					document.head.appendChild(link);
-				}
-
-				if (!editor_node) {
-					editor_node = document.createElement("div");
-					editor_node.id = "block-editor-container";
-					editor_node.style.cssText =
-						"display: none; position: fixed; inset: 0; z-index: 1500; background: white;";
-					document.body.appendChild(editor_node);
-				}
-
-				frm.trigger("setup_editor");
+				document.head.appendChild(link);
 			}
-		});
+
+			if (!document.querySelector(`link[href="${css_front}"]`)) {
+				const link = document.createElement("link");
+				link.rel = "stylesheet";
+				link.type = "text/css";
+				link.href = css_front;
+
+				document.head.appendChild(link);
+			}
+
+			if (!editor_node) {
+				editor_node = document.createElement("div");
+				editor_node.id = "block-editor-container";
+				editor_node.style.cssText =
+					"display: none; position: fixed; inset: 0; z-index: 1500; background: white;";
+				document.body.appendChild(editor_node);
+			}
+
+			import(js_path)
+				.then(() => {
+					frm.trigger("setup_editor");
+				})
+				.catch((err) => {
+					console.error("Block Editor bundle failed to load:", err);
+				});
+		}
 	},
 	refresh: function (frm) {
 		if (window.mountDMBlockEditor) {

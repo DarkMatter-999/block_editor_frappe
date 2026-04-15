@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch --mode development",
+    "dev:frontend": "BUILD_TARGET=frontend vite build --watch --mode development",
     "build": "tsc -b && vite build --mode production",
+    "build:frontend": "BUILD_TARGET=frontend vite build --watch --mode production",
     "lint": "eslint .",
     "preview": "vite preview",
     "format:check": "prettier --check .; prettier --check ../block_editor_frappe/public",

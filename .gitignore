@@ -49,6 +49,7 @@ jspm_packages/
 *debug.log
 *.bundle.js
 *.bundle.css
+vite/
 
 # Helix Editor
 .helix/
