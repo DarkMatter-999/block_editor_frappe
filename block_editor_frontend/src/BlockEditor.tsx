@@ -17,6 +17,7 @@ import {
 } from "@wordpress/block-editor";
 import { SlotFillProvider, Popover } from "@wordpress/components";
 import "@wordpress/format-library";
+import { createElement, RawHTML } from "@wordpress/element";
 
 import { initEditor } from "./utils/initEditor";
 
@@ -65,11 +66,24 @@ export function BlockEditor({
 
     const serializedContent = serialize(newBlocks);
 
-    const renderedHTML = newBlocks
-      .map((block) =>
-        getSaveContent(block.name, block.attributes, block.innerBlocks),
-      )
-      .join("");
+    const getCleanHtml = (blocks: BlockInstance[]): string => {
+      return blocks
+        .map((block) => {
+          const innerHtmlString =
+            block.innerBlocks.length > 0 ? getCleanHtml(block.innerBlocks) : "";
+
+          const contentWithInner = getSaveContent(
+            block.name,
+            block.attributes,
+            createElement(RawHTML, { children: innerHtmlString }) as any,
+          );
+
+          return contentWithInner;
+        })
+        .join("");
+    };
+
+    const renderedHTML = getCleanHtml(newBlocks);
 
     onChange?.(serializedContent, renderedHTML);
   };
