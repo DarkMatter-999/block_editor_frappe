@@ -99,12 +99,15 @@ frappe.ui.form.on("Web Page", {
 			editor_manager = window.mountDMBlockEditor(
 				editor_node,
 				frm.doc.block_editor_html_internal || "",
-				(raw_content, rendered_content) => {
+				(raw_content) => {
 					frm.set_value("block_editor_html_internal", raw_content);
-					frm.set_value("block_editor_html_rendered", rendered_content);
 				},
 				() => {
 					editor_node.style.display = "none";
+				},
+				(rendered_content) => {
+					frm.set_value("block_editor_html_rendered", rendered_content);
+					frm.save();
 				},
 				frm.doc.name,
 			);

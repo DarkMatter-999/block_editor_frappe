@@ -7,8 +7,9 @@ declare global {
     mountDMBlockEditor: (
       element: HTMLElement,
       content: string,
-      onChange: (content: string, rendered: string) => void,
+      onChange: (content: string) => void,
       onClose: () => void,
+      onSave: (rendered: string) => void,
       docName: string,
     ) => void;
   }
@@ -21,6 +22,7 @@ window.mountDMBlockEditor = (
   content,
   onChange,
   onClose,
+  onSave,
   docName = "",
 ) => {
   if (!root) {
@@ -35,6 +37,7 @@ window.mountDMBlockEditor = (
           value={newContent}
           onChange={onChange}
           onClose={onClose}
+          onSave={onSave}
         />
       </StrictMode>,
     );

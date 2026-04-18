@@ -41,8 +41,9 @@ import "@wordpress/block-library/build-style/editor.css";
 
 export interface BlockEditorProps {
   value?: string;
-  onChange?: (content: string, rendered: string) => void;
+  onChange?: (content: string) => void;
   onClose?: () => void;
+  onSave?: (rendered: string) => void;
 }
 
 // What the left sidebar is showing. null = closed.
@@ -52,6 +53,7 @@ export function BlockEditor({
   value = "",
   onChange,
   onClose,
+  onSave,
 }: BlockEditorProps) {
   const [blocks, setBlocks] = useState<BlockInstance[]>(() => {
     initEditor();
@@ -102,11 +104,8 @@ export function BlockEditor({
     return classes.join(" ").trim();
   };
 
-  const handleInput = (newBlocks: BlockInstance[]) => {
-    setBlocks(newBlocks);
-    const serializedContent = serialize(newBlocks);
-
-    const getCleanHtml = (blocks: BlockInstance[]): string => {
+  const getRenderedHTML = (blocks: BlockInstance[]): string => {
+    const renderBlocks = (blocks: BlockInstance[]): string => {
       return blocks
         .map((block) => {
           const attributes = {
@@ -115,7 +114,7 @@ export function BlockEditor({
           };
 
           const innerHtmlString =
-            block.innerBlocks.length > 0 ? getCleanHtml(block.innerBlocks) : "";
+            block.innerBlocks.length > 0 ? renderBlocks(block.innerBlocks) : "";
 
           return getSaveContent(
             block.name,
@@ -126,8 +125,15 @@ export function BlockEditor({
         .join("");
     };
 
-    const renderedHTML = getCleanHtml(newBlocks);
-    onChange?.(serializedContent, renderedHTML);
+    return renderBlocks(blocks);
+  };
+
+  const handleInput = (newBlocks: BlockInstance[]) => {
+    setBlocks(newBlocks);
+
+    const serializedContent = serialize(newBlocks);
+
+    onChange?.(serializedContent);
   };
 
   const toggleLeft = (panel: LeftPanel) =>
@@ -264,6 +270,30 @@ export function BlockEditor({
           >
             <IconSettings />
           </TopbarButton>
+
+          <button
+            onClick={() => {
+              const renderedHTML = getRenderedHTML(blocks);
+              onSave?.(renderedHTML);
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              background: "var(--primary)",
+              border: "1px solid var(--primary)",
+              cursor: "pointer",
+              fontSize: "var(--text-sm)",
+              fontFamily: "var(--font-stack)",
+              color: "white",
+              padding: "0 12px",
+              borderRadius: "var(--border-radius)",
+              height: "28px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Save
+          </button>
         </div>
       </div>
 
