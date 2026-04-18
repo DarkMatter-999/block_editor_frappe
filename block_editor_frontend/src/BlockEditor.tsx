@@ -61,30 +61,72 @@ export function BlockEditor({
   const [leftPanel, setLeftPanel] = useState<LeftPanel>("overview");
   const [showRight, setShowRight] = useState(true);
 
+  /**
+   * Maps Gutenberg block attributes to frontend CSS classes.
+   * handles Layout (Flex/Stack), Spacing, and custom styles.
+   */
+  const getBlockContextualClasses = (
+    blockName: string,
+    attributes: any,
+  ): string => {
+    const classes: string[] = [];
+
+    if (blockName === "core/group" && attributes.layout) {
+      const { type = "constrained", orientation = "horizontal" } =
+        attributes.layout;
+
+      if (type === "flex") {
+        classes.push("is-layout-flex");
+        classes.push(
+          orientation === "vertical"
+            ? "wp-block-group-is-layout-stack"
+            : "wp-block-group-is-layout-row",
+        );
+      } else if (type === "constrained") {
+        classes.push(
+          "is-layout-constrained wp-block-group-is-layout-constrained",
+        );
+      } else if (type === "default" || type === "flow") {
+        classes.push("is-layout-flow wp-block-group-is-layout-flow");
+      }
+    }
+
+    if (attributes.align) {
+      classes.push(`align${attributes.align}`);
+    }
+
+    if (attributes.className) {
+      classes.push(attributes.className);
+    }
+
+    return classes.join(" ").trim();
+  };
+
   const handleInput = (newBlocks: BlockInstance[]) => {
     setBlocks(newBlocks);
-
     const serializedContent = serialize(newBlocks);
 
     const getCleanHtml = (blocks: BlockInstance[]): string => {
       return blocks
         .map((block) => {
+          const attributes = {
+            ...block.attributes,
+            className: getBlockContextualClasses(block.name, block.attributes),
+          };
+
           const innerHtmlString =
             block.innerBlocks.length > 0 ? getCleanHtml(block.innerBlocks) : "";
 
-          const contentWithInner = getSaveContent(
+          return getSaveContent(
             block.name,
-            block.attributes,
+            attributes,
             createElement(RawHTML, { children: innerHtmlString }) as any,
           );
-
-          return contentWithInner;
         })
         .join("");
     };
 
     const renderedHTML = getCleanHtml(newBlocks);
-
     onChange?.(serializedContent, renderedHTML);
   };
 

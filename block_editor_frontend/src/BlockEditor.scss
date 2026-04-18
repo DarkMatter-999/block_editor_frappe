@@ -10,3 +10,97 @@
 		}
 	}
 }
+
+.block-editor-wrapper {
+	--wp--style--global--content-size: 800px;
+	--wp--style--global--wide-size: 1200px;
+	--wp--style--block-gap: 1.5rem;
+
+	/* Flow & Constrained Layouts */
+	.is-layout-flow,
+	.is-layout-constrained {
+		> *,
+		> .block-editor-inner-blocks > .block-editor-block-list__layout > * {
+			margin-block-start: 0;
+			margin-block-end: 0;
+		}
+		> * + *,
+		> .block-editor-inner-blocks > .block-editor-block-list__layout > * + * {
+			margin-block-start: var(--wp--style--block-gap);
+		}
+	}
+
+	.is-layout-constrained {
+		> :where(:not(.alignleft):not(.alignright):not(.alignfull)),
+		> .block-editor-inner-blocks
+			> .block-editor-block-list__layout
+			> :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+			max-width: var(--wp--style--global--content-size);
+			margin-left: auto !important;
+			margin-right: auto !important;
+		}
+		> .alignwide,
+		> .block-editor-inner-blocks > .block-editor-block-list__layout > .alignwide {
+			max-width: var(--wp--style--global--wide-size);
+		}
+	}
+
+	/* Flex Engine (Row/Stack) */
+	.is-layout-flex,
+	.is-layout-flex > .block-editor-inner-blocks > .block-editor-block-list__layout {
+		display: flex !important;
+		flex-wrap: wrap;
+		gap: var(--wp--style--block-gap);
+		width: 100%;
+
+		> :is(*, div) {
+			margin: 0;
+		}
+	}
+
+	/* Orientation */
+	.is-layout-flex:not(.is-vertical),
+	.is-layout-flex:not(.is-vertical)
+		> .block-editor-inner-blocks
+		> .block-editor-block-list__layout {
+		flex-direction: row !important;
+		align-items: center;
+	}
+
+	.is-vertical,
+	.is-vertical > .block-editor-inner-blocks > .block-editor-block-list__layout {
+		flex-direction: column !important;
+		align-items: flex-start;
+	}
+
+	/* Justification Row */
+	.is-layout-flex:not(.is-vertical) {
+		&.is-content-justification-left
+			> .block-editor-inner-blocks
+			> .block-editor-block-list__layout,
+		&.is-content-justification-left {
+			justify-content: flex-start !important;
+		}
+		&.is-content-justification-center
+			> .block-editor-inner-blocks
+			> .block-editor-block-list__layout,
+		&.is-content-justification-center {
+			justify-content: center !important;
+		}
+		&.is-content-justification-right
+			> .block-editor-inner-blocks
+			> .block-editor-block-list__layout,
+		&.is-content-justification-right {
+			justify-content: flex-end !important;
+		}
+	}
+
+	/* Columns */
+	.wp-block-columns,
+	.wp-block-columns > .block-editor-inner-blocks > .block-editor-block-list__layout {
+		display: flex !important;
+		gap: var(--wp--style--block-gap, 2em);
+		margin-bottom: 1.5rem;
+		width: 100%;
+	}
+}

@@ -116,10 +116,44 @@ export function generateThemeCss(): string {
 
   // Base Block Core Styles
   utilityClasses.push(`
-/* WP Core Alignments */
-.aligncenter { text-align: center; margin-left: auto; margin-right: auto; }
-.alignwide { max-width: var(--wp--style--global--wide-size); margin-left: auto; margin-right: auto; }
-.alignfull { max-width: none; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); width: 100vw; }
+/* --- WP Layout Constraints --- */
+:where(.is-layout-constrained) > * {
+    margin-block-start: 1.2rem;
+    margin-block-end: 0;
+}
+:where(.is-layout-constrained) > :first-child {
+    margin-block-start: 0;
+}
+
+.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+    max-width: var(--wp--style--global--content-size);
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.is-layout-constrained > .alignwide {
+    max-width: var(--wp--style--global--wide-size);
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.is-layout-constrained > .alignfull {
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.has-global-padding {
+    padding-right: var(--wp--style--root--padding-right, 1.5rem);
+    padding-left: var(--wp--style--root--padding-left, 1.5rem);
+}
+.has-global-padding > .alignfull {
+    margin-right: calc(var(--wp--style--root--padding-right, 1.5rem) * -1);
+    margin-left: calc(var(--wp--style--root--padding-left, 1.5rem) * -1);
+}
+
+.wp-block-group { box-sizing: border-box; }
+.wp-block-group.is-layout-constrained { position: relative; }
 
 /* WP Core Helpers */
 .has-text-color { color: var(--wp--preset--color--text, inherit); }
