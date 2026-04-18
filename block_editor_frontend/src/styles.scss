@@ -4,6 +4,10 @@
 	--wp--style--block-gap: 1.5rem;
 }
 
+.block-editor-rendered-content {
+	margin: 2em 1em;
+}
+
 /* Base Layouts */
 .is-layout-flow > * + *,
 .is-layout-constrained > * + * {

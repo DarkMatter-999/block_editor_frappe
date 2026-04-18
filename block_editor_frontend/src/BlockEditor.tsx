@@ -17,7 +17,7 @@ import {
 } from "@wordpress/block-editor";
 import { SlotFillProvider, Popover } from "@wordpress/components";
 import "@wordpress/format-library";
-import { createElement, RawHTML } from "@wordpress/element";
+import { createElement, RawHTML, useRef } from "@wordpress/element";
 
 import { initEditor } from "./utils/initEditor";
 
@@ -62,6 +62,9 @@ export function BlockEditor({
 
   const [leftPanel, setLeftPanel] = useState<LeftPanel>("overview");
   const [showRight, setShowRight] = useState(true);
+
+  const lastSavedRef = useRef(serialize(parse(value || "")));
+  const [isDirty, setIsDirty] = useState(false);
 
   /**
    * Maps Gutenberg block attributes to frontend CSS classes.
@@ -132,6 +135,8 @@ export function BlockEditor({
     setBlocks(newBlocks);
 
     const serializedContent = serialize(newBlocks);
+
+    setIsDirty(serializedContent !== lastSavedRef.current);
 
     onChange?.(serializedContent);
   };
@@ -271,26 +276,15 @@ export function BlockEditor({
             <IconSettings />
           </TopbarButton>
 
+          {/* Save Button */}
           <button
             onClick={() => {
               const renderedHTML = getRenderedHTML(blocks);
+              setIsDirty(false);
               onSave?.(renderedHTML);
             }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              background: "var(--primary)",
-              border: "1px solid var(--primary)",
-              cursor: "pointer",
-              fontSize: "var(--text-sm)",
-              fontFamily: "var(--font-stack)",
-              color: "white",
-              padding: "0 12px",
-              borderRadius: "var(--border-radius)",
-              height: "28px",
-              whiteSpace: "nowrap",
-            }}
+            disabled={!isDirty}
+            className="btn btn-primary btn-sm primary-action"
           >
             Save
           </button>
@@ -382,8 +376,8 @@ export function BlockEditor({
                 className="editor-styles-wrapper"
                 style={{
                   padding: "40px",
-                  width: "100%",
-                  margin: "24px auto",
+                  width: "calc(100% - 2 * 6px)",
+                  margin: "6px",
                   background: "var(--bg-color)",
                   fontFamily: "var(--font-stack)",
                   fontSize: "var(--text-md)",
