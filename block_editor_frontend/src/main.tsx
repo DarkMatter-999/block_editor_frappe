@@ -6,10 +6,10 @@ declare global {
   interface Window {
     mountDMBlockEditor: (
       element: HTMLElement,
-      content: string,
+      props: { content: string; title: string },
       onChange: (content: string) => void,
       onClose: () => void,
-      onSave: (rendered: string) => void,
+      onSave: (title: string, rendered: string) => void,
       docName: string,
     ) => void;
   }
@@ -19,7 +19,7 @@ let root: Root | null = null;
 
 window.mountDMBlockEditor = (
   element,
-  content,
+  props,
   onChange,
   onClose,
   onSave,
@@ -29,12 +29,15 @@ window.mountDMBlockEditor = (
     root = createRoot(element);
   }
 
+  const { content, title } = props;
+
   const render = (newContent: string, newDocName: string) => {
     root?.render(
       <StrictMode>
         <BlockEditor
           key={newDocName}
           value={newContent}
+          title={title}
           onChange={onChange}
           onClose={onClose}
           onSave={onSave}

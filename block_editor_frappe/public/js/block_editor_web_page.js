@@ -98,14 +98,18 @@ frappe.ui.form.on("Web Page", {
 		if (!editor_manager) {
 			editor_manager = window.mountDMBlockEditor(
 				editor_node,
-				frm.doc.block_editor_html_internal || "",
+				{
+					title: frm.get_title() || "",
+					content: frm.doc.block_editor_html_internal || "",
+				},
 				(raw_content) => {
 					frm.set_value("block_editor_html_internal", raw_content);
 				},
 				() => {
 					editor_node.style.display = "none";
 				},
-				(rendered_content) => {
+				(title, rendered_content) => {
+					frm.set_value("title", title);
 					frm.set_value("block_editor_html_rendered", rendered_content);
 					frm.save();
 				},

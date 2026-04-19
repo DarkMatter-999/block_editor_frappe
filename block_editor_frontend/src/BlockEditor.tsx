@@ -41,9 +41,10 @@ import "@wordpress/block-library/build-style/editor.css";
 
 export interface BlockEditorProps {
   value?: string;
+  title?: string;
   onChange?: (content: string) => void;
   onClose?: () => void;
-  onSave?: (rendered: string) => void;
+  onSave?: (title: string, rendered: string) => void;
 }
 
 // What the left sidebar is showing. null = closed.
@@ -51,6 +52,7 @@ type LeftPanel = "inserter" | "overview" | null;
 
 export function BlockEditor({
   value = "",
+  title = "",
   onChange,
   onClose,
   onSave,
@@ -65,6 +67,7 @@ export function BlockEditor({
 
   const lastSavedRef = useRef(serialize(parse(value || "")));
   const [isDirty, setIsDirty] = useState(false);
+  const [curTitle, setTitle] = useState(title);
 
   /**
    * Maps Gutenberg block attributes to frontend CSS classes.
@@ -143,6 +146,17 @@ export function BlockEditor({
 
   const toggleLeft = (panel: LeftPanel) =>
     setLeftPanel((prev) => (prev === panel ? null : panel));
+
+  const handleSave = () => {
+    const renderedHTML = getRenderedHTML(blocks);
+    setIsDirty(false);
+    onSave?.(curTitle, renderedHTML);
+  };
+
+  const handleTitle = (e) => {
+    setIsDirty(e.target.value !== title);
+    setTitle(e.target.value);
+  };
 
   return (
     <div
@@ -248,15 +262,12 @@ export function BlockEditor({
 
         {/* Centre title */}
         <div style={{ justifySelf: "center", whiteSpace: "nowrap" }}>
-          <span
-            style={{
-              fontSize: "var(--text-md)",
-              fontWeight: 600,
-              color: "var(--heading-color, var(--text-color))",
-            }}
-          >
-            Block Editor
-          </span>
+          <input
+            className="form-control"
+            style={{ textAlign: "center" }}
+            value={curTitle}
+            onChange={(e) => handleTitle(e)}
+          />
         </div>
 
         <div
@@ -278,11 +289,7 @@ export function BlockEditor({
 
           {/* Save Button */}
           <button
-            onClick={() => {
-              const renderedHTML = getRenderedHTML(blocks);
-              setIsDirty(false);
-              onSave?.(renderedHTML);
-            }}
+            onClick={handleSave}
             disabled={!isDirty}
             className="btn btn-primary btn-sm primary-action"
           >
