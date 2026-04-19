@@ -8,8 +8,6 @@ export function SidebarHeading({ label }: { label: string }) {
         height: "50px",
         minHeight: "36px",
         flexShrink: 0,
-        borderStyle: "none",
-        borderBottom: "1px solid var(--border-color)",
       }}
     >
       <span

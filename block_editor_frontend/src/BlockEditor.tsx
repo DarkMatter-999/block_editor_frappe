@@ -29,6 +29,7 @@ import {
 } from "./components/Icons";
 import { TopbarButton } from "./components/TopbarButton";
 import { SidebarHeading } from "./components/SidebarHeading";
+import { CloseButton } from "./components/CloseButton";
 import { editorSettings } from "./utils/editorSettings";
 
 import "./BlockEditor.scss";
@@ -379,7 +380,20 @@ export function BlockEditor({
                 }}
               >
                 {leftPanel === "overview" && (
-                  <SidebarHeading label={"Document overview"} />
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      paddingRight: "10px",
+                      borderStyle: "none",
+                      borderBottom: "1px solid var(--border-color)",
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <SidebarHeading label={"Document overview"} />
+                    </div>
+                    <CloseButton onClick={() => setLeftPanel(null)} />
+                  </div>
                 )}
 
                 <div
@@ -464,7 +478,7 @@ export function BlockEditor({
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "stretch",
+                    alignItems: "center",
                     padding: "0 10px",
                     height: "50px",
                     minHeight: "36px",
@@ -502,6 +516,7 @@ export function BlockEditor({
                       {tab === "page" ? "Page" : "Block"}
                     </button>
                   ))}
+                  <CloseButton onClick={() => setShowRight(false)} />
                 </div>
 
                 {/* Tab Content */}
