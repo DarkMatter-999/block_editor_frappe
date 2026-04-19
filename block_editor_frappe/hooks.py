@@ -87,6 +87,7 @@ doctype_js = {"Web Page": "public/js/block_editor_web_page.js"}
 
 # before_install = "block_editor_frappe.install.before_install"
 # after_install = "block_editor_frappe.install.after_install"
+after_install = "block_editor_frappe.utils.build_assets"
 
 # Uninstallation
 # ------------
