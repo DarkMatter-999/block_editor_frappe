@@ -101,6 +101,10 @@ frappe.ui.form.on("Web Page", {
 				{
 					title: frm.get_title() || "",
 					content: frm.doc.block_editor_html_internal || "",
+					route: frm.doc.route || "",
+					published: frm.doc.published || 0,
+					meta_title: frm.doc.meta_title || "",
+					meta_description: frm.doc.meta_description || "",
 				},
 				(raw_content) => {
 					frm.set_value("block_editor_html_internal", raw_content);
@@ -108,9 +112,13 @@ frappe.ui.form.on("Web Page", {
 				() => {
 					editor_node.style.display = "none";
 				},
-				(title, rendered_content) => {
+				(title, rendered_content, route, published, meta_title, meta_description) => {
 					frm.set_value("title", title);
 					frm.set_value("block_editor_html_rendered", rendered_content);
+					frm.set_value("route", route);
+					frm.set_value("published", published);
+					frm.set_value("meta_title", meta_title);
+					frm.set_value("meta_description", meta_description);
 					frm.save();
 				},
 				frm.doc.name,
