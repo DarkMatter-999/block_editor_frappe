@@ -9,10 +9,14 @@ import {
   BlockEditorProvider,
   BlockList,
   BlockInspector,
+  // @ts-expect-error - not yet in types
   BlockStyles,
+  // @ts-expect-error - not yet in types
   BlockTools,
   WritingFlow,
+  // @ts-expect-error - not yet in types
   __experimentalListView as ListView,
+  // @ts-expect-error - not yet in types
   __experimentalLibrary as BlockLibrary,
 } from "@wordpress/block-editor";
 import { SlotFillProvider, Popover } from "@wordpress/components";
@@ -108,6 +112,7 @@ export function BlockEditor({
    */
   const getBlockContextualClasses = (
     blockName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     attributes: any,
   ): string => {
     const classes: string[] = [];
@@ -158,6 +163,7 @@ export function BlockEditor({
           return getSaveContent(
             block.name,
             attributes,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             createElement(RawHTML, { children: innerHtmlString }) as any,
           );
         })
@@ -201,7 +207,7 @@ export function BlockEditor({
     });
   };
 
-  const handleTitle = (e) => {
+  const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsDirty(e.target.value !== initialSettings.title);
     setTitle(e.target.value);
   };
@@ -352,6 +358,7 @@ export function BlockEditor({
           onInput={handleInput}
           onChange={handleInput}
           settings={editorSettings}
+          // @ts-expect-error - not yet in types
           stripExperimentalSettings={false}
         >
           <BlockStyles scope=".editor-styles-wrapper" />
@@ -441,6 +448,7 @@ export function BlockEditor({
               }}
             >
               <WritingFlow
+                // @ts-expect-error - not yet in types
                 className="editor-styles-wrapper"
                 style={{
                   padding: "40px",

@@ -1,11 +1,11 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { generateThemeCss } from "./src/utils/generateThemeCss";
 
-function virtualWpThemePlugin() {
+function virtualWpThemePlugin(): Plugin {
   const virtualModuleId = "virtual:wp-theme.css";
   const resolvedVirtualModuleId = "\0" + virtualModuleId;
 
