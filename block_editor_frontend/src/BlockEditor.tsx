@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   parse,
   serialize,
@@ -8,7 +7,6 @@ import {
 import {
   BlockEditorProvider,
   BlockList,
-  BlockInspector,
   // @ts-expect-error - not yet in types
   BlockStyles,
   // @ts-expect-error - not yet in types
@@ -21,7 +19,7 @@ import {
 } from "@wordpress/block-editor";
 import { SlotFillProvider, Popover } from "@wordpress/components";
 import "@wordpress/format-library";
-import { createElement, RawHTML, useRef } from "@wordpress/element";
+import { createElement, RawHTML, useState, useRef } from "@wordpress/element";
 
 import { initEditor } from "./utils/initEditor";
 
@@ -35,6 +33,7 @@ import { TopbarButton } from "./components/TopbarButton";
 import { SidebarHeading } from "./components/SidebarHeading";
 import { CloseButton } from "./components/CloseButton";
 import { editorSettings } from "./utils/editorSettings";
+import { EditorSidebar } from "./components/EditorSidebar";
 
 import "./BlockEditor.scss";
 import "./styles.scss";
@@ -98,13 +97,7 @@ export function BlockEditor({
 
   const lastSavedRef = useRef(serialize(parse(value || "")));
   const [isDirty, setIsDirty] = useState(false);
-  const [curTitle, setTitle] = useState(initialSettings.title);
-  const [curRoute, setRoute] = useState(initialSettings.route);
-  const [curPublished, setPublished] = useState(initialSettings.published);
-  const [curMetaTitle, setMetaTitle] = useState(initialSettings.meta_title);
-  const [curMetaDescription, setMetaDescription] = useState(
-    initialSettings.meta_description,
-  );
+  const [settings, setSettings] = useState(initialSettings);
 
   /**
    * Maps Gutenberg block attributes to frontend CSS classes.
@@ -190,26 +183,20 @@ export function BlockEditor({
     const renderedHTML = getRenderedHTML(blocks);
     setIsDirty(false);
     onSave?.(
-      curTitle,
+      settings.title,
       renderedHTML,
-      curRoute,
-      curPublished,
-      curMetaTitle,
-      curMetaDescription,
+      settings.route,
+      settings.published,
+      settings.meta_title,
+      settings.meta_description,
     );
 
-    setInitialSettings({
-      title: curTitle,
-      published: curPublished,
-      route: curRoute,
-      meta_title: curMetaTitle,
-      meta_description: curMetaDescription,
-    });
+    setInitialSettings(settings);
   };
 
   const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsDirty(e.target.value !== initialSettings.title);
-    setTitle(e.target.value);
+    setSettings((s) => ({ ...s, title: e.target.value }));
   };
 
   return (
@@ -319,7 +306,7 @@ export function BlockEditor({
           <input
             className="form-control"
             style={{ textAlign: "center" }}
-            value={curTitle}
+            value={settings.title}
             onChange={(e) => handleTitle(e)}
           />
         </div>
@@ -469,251 +456,17 @@ export function BlockEditor({
 
             {/* Right sidebar */}
             {showRight && (
-              <div
-                style={{
-                  width: "280px",
-                  minWidth: "280px",
-                  flexShrink: 0,
-                  borderLeft: "1px solid var(--border-color)",
-                  background: "var(--fg-color)",
-                  display: "flex",
-                  flexDirection: "column",
-                  overflow: "hidden",
-                  minHeight: 0,
-                  borderStyle: "none",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "0 10px",
-                    height: "50px",
-                    minHeight: "36px",
-                    flexShrink: 0,
-                    borderStyle: "none",
-                    borderBottom: "1px solid var(--border-color)",
-                  }}
-                >
-                  {["page", "block"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setRightPanel(tab as RightPanel)}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        borderBottom:
-                          rightPanel === tab
-                            ? "2px solid var(--text-color)"
-                            : "none",
-                        cursor: "pointer",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                        color:
-                          rightPanel === tab
-                            ? "var(--text-color)"
-                            : "var(--text-muted)",
-                        padding: "0 10px",
-                        marginRight: "10px",
-                        height: "100%",
-                        transition: "all 0.1s ease",
-                      }}
-                    >
-                      {tab === "page" ? "Page" : "Block"}
-                    </button>
-                  ))}
-                  <CloseButton onClick={() => setShowRight(false)} />
-                </div>
-
-                {/* Tab Content */}
-                <div
-                  style={{
-                    flex: 1,
-                    overflowY: "auto",
-                    overflowX: "hidden",
-                    minHeight: 0,
-                  }}
-                >
-                  {rightPanel === "block" ? (
-                    <BlockInspector />
-                  ) : (
-                    <div
-                      style={{
-                        padding: "16px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "20px",
-                      }}
-                    >
-                      {/* Page Title */}
-                      <div>
-                        <label
-                          style={{
-                            display: "block",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            textTransform: "uppercase",
-                            marginBottom: "8px",
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          Title
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={curTitle}
-                          onChange={handleTitle}
-                          style={{ width: "100%" }}
-                        />
-                      </div>
-
-                      <hr
-                        style={{
-                          border: "none",
-                          borderTop: "1px solid var(--border-color)",
-                          margin: "0",
-                        }}
-                      />
-
-                      {/* Published Status */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <label
-                          style={{ fontSize: "13px", cursor: "pointer" }}
-                          htmlFor="page-published"
-                        >
-                          Published
-                        </label>
-                        <input
-                          type="checkbox"
-                          id="page-published"
-                          style={{ width: "16px", height: "16px" }}
-                          value={curPublished}
-                          checked={curPublished === 1}
-                          onChange={(e) => {
-                            setPublished(e.target.checked ? 1 : 0);
-                            setIsDirty(
-                              (e.target.checked ? 1 : 0) !==
-                                initialSettings.published,
-                            );
-                          }}
-                        />
-                      </div>
-
-                      {/* URL Slug */}
-                      <div>
-                        <label
-                          style={{
-                            display: "block",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            textTransform: "uppercase",
-                            marginBottom: "8px",
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          Route (Slug)
-                        </label>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px",
-                            fontSize: "13px",
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          <span>/</span>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="page-slug"
-                            style={{ flex: 1 }}
-                            value={curRoute}
-                            onChange={(e) => {
-                              setRoute(e.target.value);
-                              setIsDirty(
-                                e.target.value !== initialSettings.route,
-                              );
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* SEO Meta Title */}
-                      <div>
-                        <label
-                          style={{
-                            display: "block",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            textTransform: "uppercase",
-                            marginBottom: "8px",
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          Meta Title
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="SEO Title..."
-                          style={{ width: "100%" }}
-                          value={curMetaTitle}
-                          onChange={(e) => {
-                            setMetaTitle(e.target.value);
-                            setIsDirty(
-                              e.target.value !== initialSettings.meta_title,
-                            );
-                          }}
-                        />
-                      </div>
-
-                      {/* SEO Meta Description */}
-                      <div>
-                        <label
-                          style={{
-                            display: "block",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            textTransform: "uppercase",
-                            marginBottom: "8px",
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          Meta Description
-                        </label>
-                        <textarea
-                          className="form-control"
-                          rows={4}
-                          placeholder="SEO Description..."
-                          style={{
-                            width: "100%",
-                            resize: "none",
-                            fontSize: "13px",
-                          }}
-                          value={curMetaDescription}
-                          onChange={(e) => {
-                            setMetaDescription(e.target.value);
-                            setIsDirty(
-                              e.target.value !==
-                                initialSettings.meta_description,
-                            );
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <EditorSidebar
+                rightPanel={rightPanel}
+                setRightPanel={setRightPanel}
+                showRight={showRight}
+                setShowRight={setShowRight}
+                settings={settings}
+                setSettings={setSettings}
+                handleTitle={handleTitle}
+                setIsDirty={setIsDirty}
+                initialSettings={initialSettings}
+              />
             )}
           </div>
 

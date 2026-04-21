@@ -1,6 +1,6 @@
 export const editorSettings = {
   hasFixedToolbar: false,
-  __unstableIsPreviewMode: false,
+  isPreviewMode: false,
   supportsLayout: true,
   alignWide: true,
   align: true,
