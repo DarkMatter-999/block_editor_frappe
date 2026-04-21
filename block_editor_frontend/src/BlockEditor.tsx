@@ -12,10 +12,6 @@ import {
   // @ts-expect-error - not yet in types
   BlockTools,
   WritingFlow,
-  // @ts-expect-error - not yet in types
-  __experimentalListView as ListView,
-  // @ts-expect-error - not yet in types
-  __experimentalLibrary as BlockLibrary,
 } from "@wordpress/block-editor";
 import { SlotFillProvider, Popover } from "@wordpress/components";
 import "@wordpress/format-library";
@@ -30,10 +26,9 @@ import {
   IconSettings,
 } from "./components/Icons";
 import { TopbarButton } from "./components/TopbarButton";
-import { SidebarHeading } from "./components/SidebarHeading";
-import { CloseButton } from "./components/CloseButton";
 import { editorSettings } from "./utils/editorSettings";
 import { EditorSidebar } from "./components/EditorSidebar";
+import { DocumentSidebar } from "./components/DocumentSidebar";
 
 import "./BlockEditor.scss";
 import "./styles.scss";
@@ -358,69 +353,10 @@ export function BlockEditor({
             }}
           >
             {/* Left sidebar */}
-            {leftPanel !== null && (
-              <div
-                style={{
-                  width: "350px",
-                  minWidth: "350px",
-                  flexShrink: 0,
-                  borderRight: "1px solid var(--border-color)",
-                  background: "var(--fg-color)",
-                  display: "flex",
-                  flexDirection: "column",
-                  overflow: "hidden",
-                  borderStyle: "none",
-                  minHeight: 0,
-                }}
-              >
-                {leftPanel === "overview" && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      paddingRight: "10px",
-                      borderStyle: "none",
-                      borderBottom: "1px solid var(--border-color)",
-                    }}
-                  >
-                    <div style={{ flex: 1 }}>
-                      <SidebarHeading label={"Document overview"} />
-                    </div>
-                    <CloseButton onClick={() => setLeftPanel(null)} />
-                  </div>
-                )}
-
-                <div
-                  style={{
-                    flex: 1,
-                    overflowY: "auto",
-                    overflowX: "hidden",
-                    minHeight: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: leftPanel === "inserter" ? "block" : "none",
-                      height: "100%",
-                    }}
-                  >
-                    <BlockLibrary
-                      showMostUsedBlocks
-                      onClose={() => setLeftPanel(null)}
-                    />
-                  </div>
-
-                  <div
-                    style={{
-                      display: leftPanel === "overview" ? "block" : "none",
-                      padding: "4px 0",
-                    }}
-                  >
-                    <ListView />
-                  </div>
-                </div>
-              </div>
-            )}
+            <DocumentSidebar
+              leftPanel={leftPanel}
+              setLeftPanel={setLeftPanel}
+            />
 
             {/* Canvas */}
             <BlockTools
