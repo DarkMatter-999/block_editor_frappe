@@ -2,6 +2,9 @@
 
 {% block style %}
 {{ super() }}
+<style>
+{{ block_editor_css }}
+</style>
 <link rel="stylesheet" href="/assets/block_editor_frappe/vite/css/block_editor_frontend.css">
 {% endblock %}
 
