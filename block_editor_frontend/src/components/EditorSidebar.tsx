@@ -30,6 +30,7 @@ interface EditorSidebarProps {
     }>
   >;
   handleTitle: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isDirty: boolean;
   setIsDirty: (isDirty: boolean) => void;
   initialSettings: {
     title: string;
@@ -48,6 +49,7 @@ export function EditorSidebar({
   settings,
   setSettings,
   handleTitle,
+  isDirty,
   setIsDirty,
   initialSettings,
 }: EditorSidebarProps) {
@@ -206,6 +208,32 @@ export function EditorSidebar({
                 }}
               />
             </div>
+
+            {settings.published === 1 && !isDirty && (
+              <div style={{ marginTop: "4px" }}>
+                <a
+                  href={`/${settings.route}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-default btn-sm"
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    textAlign: "center",
+                  }}
+                >
+                  View Post ↗
+                </a>
+              </div>
+            )}
+
+            <hr
+              style={{
+                border: "none",
+                borderTop: "1px solid var(--border-color)",
+                margin: "0",
+              }}
+            />
 
             {/* URL Slug */}
             <div>

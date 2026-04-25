@@ -177,6 +177,8 @@ export function BlockEditor({
   const handleSave = () => {
     const renderedHTML = getRenderedHTML(blocks);
     setIsDirty(false);
+    setShowRight(true);
+    setRightPanel("page");
     onSave?.(
       settings.title,
       renderedHTML,
@@ -400,6 +402,7 @@ export function BlockEditor({
                 settings={settings}
                 setSettings={setSettings}
                 handleTitle={handleTitle}
+                isDirty={isDirty}
                 setIsDirty={setIsDirty}
                 initialSettings={initialSettings}
               />
