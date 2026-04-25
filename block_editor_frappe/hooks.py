@@ -270,5 +270,13 @@ fixtures = [
             ],
             ["dt", "=", "Web Page"]
         ]
+    },
+    {
+        "dt": "Property Setter",
+        "filters": [
+            ["doc_type", "=", "Web Page"],
+            ["field_name", "=", "content_type"],
+            ["property", "in", ["options", "default"]]
+        ]
     }
 ]
