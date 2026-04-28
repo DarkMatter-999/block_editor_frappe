@@ -257,26 +257,45 @@ require_type_annotated_api_methods = True
 # ignore_translatable_strings_from = []
 
 fixtures = [
-    {
-        "dt": "Custom Field",
-        "filters": [
-            [
-                "fieldname", "in", [
-                    "block_editor_html_internal",
-                    "block_editor_html_rendered",
-                    "block_editor_interface",
-                    "block_editor_css"
-                ]
-            ],
-            ["dt", "=", "Web Page"]
-        ]
-    },
-    {
-        "dt": "Property Setter",
-        "filters": [
-            ["doc_type", "=", "Web Page"],
-            ["field_name", "=", "content_type"],
-            ["property", "in", ["options", "default"]]
-        ]
-    }
+	{
+		"dt": "Custom Field",
+		"filters": [
+			[
+				"fieldname",
+				"in",
+				[
+					"block_editor_html_internal",
+					"block_editor_html_rendered",
+					"block_editor_interface",
+					"block_editor_css",
+				],
+			],
+			["dt", "=", "Web Page"],
+		],
+	},
+	{
+		"dt": "Property Setter",
+		"filters": [
+			["doc_type", "=", "Web Page"],
+			["field_name", "=", "content_type"],
+			["property", "in", ["options", "default"]],
+		],
+	},
+	{
+		"dt": "Property Setter",
+		"filters": [
+			["doc_type", "=", "Web Page"],
+			[
+				"field_name",
+				"in",
+				[
+					"block_editor_html_internal",
+					"block_editor_html_rendered",
+					"block_editor_interface",
+					"block_editor_css",
+				],
+			],
+			["property", "=", "depends_on"],
+		],
+	},
 ]
