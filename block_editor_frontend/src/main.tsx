@@ -57,6 +57,7 @@ window.mountDMBlockEditor = (
           published={published}
           meta_title={meta_title}
           meta_description={meta_description}
+          docName={newDocName}
           onChange={onChange}
           onClose={onClose}
           onSave={onSave}

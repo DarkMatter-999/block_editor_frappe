@@ -15,7 +15,14 @@ import {
 } from "@wordpress/block-editor";
 import { SlotFillProvider, Popover } from "@wordpress/components";
 import "@wordpress/format-library";
-import { createElement, RawHTML, useState, useRef } from "@wordpress/element";
+import {
+  createElement,
+  RawHTML,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "@wordpress/element";
 
 import { initEditor } from "./utils/initEditor";
 
@@ -29,6 +36,7 @@ import { TopbarButton } from "./components/TopbarButton";
 import { editorSettings } from "./utils/editorSettings";
 import { EditorSidebar } from "./components/EditorSidebar";
 import { DocumentSidebar } from "./components/DocumentSidebar";
+import { frappeMediaUpload } from "./utils/frappeMediaUpload";
 
 import "./BlockEditor.scss";
 import "./styles.scss";
@@ -45,6 +53,7 @@ export interface BlockEditorProps {
   published?: number;
   meta_title?: string;
   meta_description?: string;
+  docName?: string;
   onChange?: (content: string) => void;
   onClose?: () => void;
   onSave?: (
@@ -69,6 +78,7 @@ export function BlockEditor({
   published = 0,
   meta_title = "",
   meta_description = "",
+  docName,
   onChange,
   onClose,
   onSave,
@@ -93,6 +103,22 @@ export function BlockEditor({
   const lastSavedRef = useRef(serialize(parse(value || "")));
   const [isDirty, setIsDirty] = useState(false);
   const [settings, setSettings] = useState(initialSettings);
+
+  const settingsForProvider = useMemo(() => {
+    return {
+      ...editorSettings,
+      mediaUpload: (args: any) => {
+        const files = args.files || args.filesList;
+        if (files && files.length > 0) {
+          return frappeMediaUpload({
+            ...args,
+            files,
+            docName,
+          });
+        }
+      },
+    };
+  }, [docName]);
 
   /**
    * Maps Gutenberg block attributes to frontend CSS classes.
@@ -161,15 +187,15 @@ export function BlockEditor({
     return renderBlocks(blocks);
   };
 
-  const handleInput = (newBlocks: BlockInstance[]) => {
-    setBlocks(newBlocks);
-
-    const serializedContent = serialize(newBlocks);
-
-    setIsDirty(serializedContent !== lastSavedRef.current);
-
-    onChange?.(serializedContent);
-  };
+  const handleInput = useCallback(
+    (newBlocks: BlockInstance[]) => {
+      setBlocks(newBlocks);
+      const serializedContent = serialize(newBlocks);
+      setIsDirty(serializedContent !== lastSavedRef.current);
+      onChange?.(serializedContent);
+    },
+    [onChange],
+  );
 
   const toggleLeft = (panel: LeftPanel) =>
     setLeftPanel((prev) => (prev === panel ? null : panel));
@@ -341,7 +367,7 @@ export function BlockEditor({
           value={blocks}
           onInput={handleInput}
           onChange={handleInput}
-          settings={editorSettings}
+          settings={settingsForProvider}
           // @ts-expect-error - not yet in types
           stripExperimentalSettings={false}
         >
