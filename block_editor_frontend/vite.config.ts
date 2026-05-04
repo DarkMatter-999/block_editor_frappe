@@ -49,6 +49,7 @@ const cssAliases = [
 
 export default defineConfig(({ mode }) => {
   const isFrontend = process.env.BUILD_TARGET === "frontend";
+  const isDev = mode === "development";
 
   return {
     plugins: [
@@ -64,6 +65,9 @@ export default defineConfig(({ mode }) => {
       outDir: "../block_editor_frappe/public/vite",
       emptyOutDir: false,
       cssCodeSplit: false,
+      sourcemap: isDev ? "inline" : false,
+      minify: isDev ? false : "esbuild",
+      target: "esnext",
       rollupOptions: {
         input: isFrontend
           ? resolve(__dirname, "src/scripts/frontendStyles.ts")

@@ -36,6 +36,7 @@ import { TopbarButton } from "./components/TopbarButton";
 import { editorSettings } from "./utils/editorSettings";
 import { EditorSidebar } from "./components/EditorSidebar";
 import { DocumentSidebar } from "./components/DocumentSidebar";
+import { MediaUpload } from "./components/MediaUpload";
 import { frappeMediaUpload } from "./utils/frappeMediaUpload";
 
 import "./BlockEditor.scss";
@@ -107,6 +108,7 @@ export function BlockEditor({
   const settingsForProvider = useMemo(() => {
     return {
       ...editorSettings,
+      MediaUpload: MediaUpload,
       mediaUpload: (args: any) => {
         const files = args.files || args.filesList;
         if (files && files.length > 0) {
@@ -367,6 +369,7 @@ export function BlockEditor({
           value={blocks}
           onInput={handleInput}
           onChange={handleInput}
+          // @ts-expect-error - not yet in types
           settings={settingsForProvider}
           // @ts-expect-error - not yet in types
           stripExperimentalSettings={false}
